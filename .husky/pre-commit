@@ -1,6 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
 # rebuild shared packages before allowing a commit
 pnpm build:packages || {
   echo "Workspace build failed; aborting commit." >&2
