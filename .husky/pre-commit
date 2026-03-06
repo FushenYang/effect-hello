@@ -1,8 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# rebuild shared and server before allowing a commit
-pnpm build:server || {
+# rebuild shared packages before allowing a commit
+pnpm build:packages || {
   echo "Workspace build failed; aborting commit." >&2
   exit 1
 }
