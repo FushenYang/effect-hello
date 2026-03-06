@@ -1,2 +1,2 @@
 # effect-hello
-Learning full-stack Effect.ts with Solid.js and TanStac
+Learning full-stack Effect.ts with Solid.js and TanStack
