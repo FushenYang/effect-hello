@@ -1,20 +1,21 @@
 {
-  "name": "@effect-hello/shared",
+  "name": "@effect-hello/server",
   "type": "module",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "types": "index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "tsx watch src/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.30.3",
   "dependencies": {
+    "@effect-hello/shared": "workspace:*",
     "@effect/platform": "^0.94.5",
+    "@effect/platform-node": "^0.104.1",
     "effect": "^3.19.19"
   }
 }

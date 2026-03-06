@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build workspace",
+      "type": "shell",
+      "command": "pnpm build",
+      "problemMatcher": []
+    },
+    {
+      "label": "build server only",
+      "type": "shell",
+      "command": "pnpm build:server",
+      "problemMatcher": []
+    },
+    {
+      "label": "watch shared",
+      "type": "shell",
+      "command": "pnpm --filter @effect-hello/shared run watch",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

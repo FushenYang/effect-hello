@@ -8,6 +8,7 @@ export class Post extends Schema.Class<Post>("Post")({
   id: Schema.Number,
   title: Schema.String.pipe(Schema.nonEmptyString()),
   content: Schema.String,
+  keyword: Schema.String, // 可选的标签数组，默认为空
 }) {}
 
 // 创建文章的请求载荷 (不需要 id)
@@ -16,6 +17,7 @@ export class CreatePostRequest extends Schema.Class<CreatePostRequest>(
 )({
   title: Schema.String.pipe(Schema.minLength(3)),
   content: Schema.String,
+  keyword: Schema.String,
 }) {}
 
 // ==========================================
