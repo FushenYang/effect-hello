@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref } from "effect";
+import { Effect, Layer, Ref, Config } from "effect";
 import { HttpApiBuilder } from "@effect/platform";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
 import { createServer } from "node:http";
@@ -55,8 +55,22 @@ const PostsApiLive = HttpApiBuilder.group(AppApi, "posts", (handlers) =>
 
 const ApiLive = HttpApiBuilder.api(AppApi).pipe(Layer.provide(PostsApiLive));
 
+// ==========================================
+// 读取一个端口配置
+const portConfig = Config.integer("PORT").pipe(Config.withDefault(3000));
 // 启动在 3000 端口，配置 CORS 允许前端跨域
-const ServerLive = NodeHttpServer.layer(() => createServer(), { port: 3000 });
+const ServerLive = Layer.unwrapEffect(
+  Effect.gen(function* () {
+    // 1. 读取配置（获取端口号）
+    const port = yield* portConfig;
+    // 2. 打印一条启动日志，让你清楚地知道它在哪运行
+    yield* Effect.logInfo(`Starting HTTP Server on port ${port}...`);
+    // 3. 返回配置好的 Layer！
+    // (unwrapEffect 会自动把这个返回的 Layer 挂载到系统中)
+    const ret = NodeHttpServer.layer(createServer, { port });
+    return ret;
+  }),
+);
 // 【注意】如果你不用平台库提供的中间件，你可以自己加简单的 CORS 处理，目前我们先保持最简
 
 // const HttpLive = HttpApiBuilder.serve(ApiLive).pipe(
@@ -64,13 +78,14 @@ const ServerLive = NodeHttpServer.layer(() => createServer(), { port: 3000 });
 //   Layer.provide(ServerLive),
 //   Layer.provide(DbLive) // 提供数据库依赖
 // )
-const AppLive = HttpApiBuilder.serve().pipe(
-  // serve() 返回一个特殊的 Layer，它大喊：“我需要一个 Api 实现，和一个 Server 引擎！”
-  // 满足第一个需求：提供 API 实现 (此时它知道要去哪里找路由了)
+
+const HttpLive = HttpApiBuilder.serve();
+const AppLive = HttpLive.pipe(
+  (layer) => {
+    return layer;
+  },
   Layer.provide(ApiLive),
-  // 满足 API 实现内部的需求：提供数据库
   Layer.provide(DbLive),
-  // 满足 serve() 的第二个需求：提供底层 HTTP Server 引擎
   Layer.provide(ServerLive),
 );
 
