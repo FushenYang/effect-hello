@@ -71,13 +71,6 @@ const ServerLive = Layer.unwrapEffect(
     return ret;
   }),
 );
-// 【注意】如果你不用平台库提供的中间件，你可以自己加简单的 CORS 处理，目前我们先保持最简
-
-// const HttpLive = HttpApiBuilder.serve(ApiLive).pipe(
-//   Layer.provide(PostsApiLive),
-//   Layer.provide(ServerLive),
-//   Layer.provide(DbLive) // 提供数据库依赖
-// )
 
 const HttpLive = HttpApiBuilder.serve();
 const AppLive = HttpLive.pipe(
