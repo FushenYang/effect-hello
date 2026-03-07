@@ -1,32 +1,38 @@
-import { Effect, Layer, Ref } from "effect"
-import { HttpApiBuilder } from "@effect/platform"
-import { NodeHttpServer, NodeRuntime } from "@effect/platform-node"
-import { createServer } from "node:http"
-import { AppApi, Post } from "@effect-hello/shared"
-
+import { Effect, Layer, Ref } from "effect";
+import { HttpApiBuilder } from "@effect/platform";
+import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
+import { createServer } from "node:http";
+import { AppApi, Post } from "@effect-hello/shared";
 
 // ==========================================
 // 1. 模拟数据库 (使用 Effect.Ref 提供并发安全的状态)
 // ==========================================
 const makeDb = Effect.gen(function* () {
-  const posts = yield* Ref.make<Post[]>([new Post({ id: 1, title: "Hello World", content: "This is the first post.",keyword: "greeting" })])
-  let idCounter = 1
+  const posts = yield* Ref.make<Post[]>([
+    new Post({
+      id: 1,
+      title: "Hello World",
+      content: "This is the first post.",
+      keyword: "greeting",
+    }),
+  ]);
+  let idCounter = 1;
 
   return {
     getPosts: Ref.get(posts),
     createPost: (req: { title: string; content: string; keyword: string }) =>
       Effect.gen(function* () {
         // 使用 Schema.Class 实例化，自带强校验！
-        const post = new Post({ id: idCounter++, ...req })
-        yield* Ref.update(posts, (arr) => [...arr, post])
-        return post
-      })
-  }
-})
+        const post = new Post({ id: idCounter++, ...req });
+        yield* Ref.update(posts, (arr) => [...arr, post]);
+        return post;
+      }),
+  };
+});
 
 // 定义依赖注入的 Tag 和 Layer
 class Db extends Effect.Tag("Db")<Db, Effect.Effect.Success<typeof makeDb>>() {}
-const DbLive = Layer.effect(Db, makeDb)
+const DbLive = Layer.effect(Db, makeDb);
 
 // ==========================================
 // 2. 实现 API 契约
@@ -35,24 +41,22 @@ const PostsApiLive = HttpApiBuilder.group(AppApi, "posts", (handlers) =>
   handlers
     .handle("getPosts", () =>
       Effect.gen(function* () {
-        const db = yield* Db // 注入数据库
-        return yield* db.getPosts
-      })
+        const db = yield* Db; // 注入数据库
+        return yield* db.getPosts;
+      }),
     )
     .handle("createPost", ({ payload }) =>
       Effect.gen(function* () {
-        const db = yield* Db
-        return yield* db.createPost(payload)
-      })
-    )
-)
+        const db = yield* Db;
+        return yield* db.createPost(payload);
+      }),
+    ),
+);
 
-const ApiLive = HttpApiBuilder.api(AppApi).pipe(
-  Layer.provide(PostsApiLive)
-)
+const ApiLive = HttpApiBuilder.api(AppApi).pipe(Layer.provide(PostsApiLive));
 
 // 启动在 3000 端口，配置 CORS 允许前端跨域
-const ServerLive = NodeHttpServer.layer(() => createServer(), { port: 3000 })
+const ServerLive = NodeHttpServer.layer(() => createServer(), { port: 3000 });
 // 【注意】如果你不用平台库提供的中间件，你可以自己加简单的 CORS 处理，目前我们先保持最简
 
 // const HttpLive = HttpApiBuilder.serve(ApiLive).pipe(
@@ -71,4 +75,4 @@ const AppLive = HttpApiBuilder.serve().pipe(
 );
 
 // 运行程序
-NodeRuntime.runMain(Layer.launch(AppLive))
+NodeRuntime.runMain(Layer.launch(AppLive));

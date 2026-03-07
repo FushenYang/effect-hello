@@ -104,6 +104,12 @@
       "type": "shell",
       "command": "pnpm build:server",
       "problemMatcher": []
+    },
+    {
+      "label": "git commit and push",
+      "type": "shell",
+      "command": "git add . && git commit -m '更新保存' && git push",
+      "group": "build"
     }
   ]
 }
