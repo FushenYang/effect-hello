@@ -43,6 +43,11 @@
     "baseUrl": ".",
     "paths": {
       "@effect-hello/shared": ["packages/shared/src"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ]
   }
 }

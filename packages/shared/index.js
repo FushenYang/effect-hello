@@ -28,4 +28,4 @@ const postsGroup = HttpApiGroup.make("posts")
     .setPayload(CreatePostRequest)
     .addSuccess(Post));
 // 3. 组合成整个 App 的 API
-export const AppApi = HttpApi.make("app").add(postsGroup);
+export const AppApi = HttpApi.make("app").add(postsGroup).prefix("/api");
