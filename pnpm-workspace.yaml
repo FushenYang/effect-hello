@@ -6,3 +6,8 @@ ignoredBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
   - msgpackr-extract
+
+catalog:
+  "effect": "^3.19.19"
+  "@effect/platform": "^0.94.5"
+  "typescript": "^6.0.2"
